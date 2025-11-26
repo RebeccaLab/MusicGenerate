@@ -543,6 +543,51 @@ try:
     model = xLSTMBlockStack(cfg).to(device)
     embedding = torch.nn.Embedding(303, cfg.embedding_dim).to(device)
     classifier = torch.nn.Linear(cfg.embedding_dim, 303).to(device)
+except RuntimeError as e:
+    if "Error building extension" in str(e) or "ninja" in str(e) or "undefined reference" in str(e):
+        # CUDA compilation failed - fall back to CPU mode
+        print("\n" + "="*70)
+        print("⚠ CUDA Compilation Error - Falling back to CPU mode")
+        print("="*70)
+        print("\nxlstm failed to compile CUDA extensions.")
+        print("This can happen due to:")
+        print("  - Python version compatibility (Python 3.13 may have issues)")
+        print("  - CUDA/PyTorch version mismatches")
+        print("  - Missing compilation dependencies\n")
+        print("Switching to CPU mode (backend='vanilla')...\n")
+        
+        # Reconfigure for CPU mode
+        device = "cpu"
+        backend = "vanilla"
+        cfg = xLSTMBlockStackConfig(
+            mlstm_block=mLSTMBlockConfig(
+                mlstm=mLSTMLayerConfig(
+                    conv1d_kernel_size=4, qkv_proj_blocksize=4, num_heads=4
+                )
+            ),
+            slstm_block=sLSTMBlockConfig(
+                slstm=sLSTMLayerConfig(
+                    backend="vanilla",  # Force CPU mode
+                    num_heads=4,
+                    conv1d_kernel_size=4,
+                    bias_init="powerlaw_blockdependent",
+                ),
+                feedforward=FeedForwardConfig(proj_factor=1.3, act_fn="gelu"),
+            ),
+            context_length=256,
+            num_blocks=7,
+            embedding_dim=128,
+            slstm_at=[1],
+        )
+        
+        # Retry with CPU backend
+        print("Retrying with CPU backend...")
+        model = xLSTMBlockStack(cfg).to(device)
+        embedding = torch.nn.Embedding(303, cfg.embedding_dim).to(device)
+        classifier = torch.nn.Linear(cfg.embedding_dim, 303).to(device)
+        print("✓ Model initialized in CPU mode\n")
+    else:
+        raise
 
     if os.path.exists(CHECKPOINT_PATH):
         print(f"Loading checkpoint from {CHECKPOINT_PATH}...")
