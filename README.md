@@ -39,5 +39,3 @@ pip install -r requirements.txt
    - Set DELTA, PITCH, VEL parameters
    - Optional: Enable style mixing and adjust alpha (0 = generated, 1 = style)
    - Click "Generate MIDI" and download the result
-
-**Note**: The app is configured for CPU mode by default. If you have CUDA installed and want to use GPU, change `backend="vanilla"` to `backend="cuda"` in `app.py`.

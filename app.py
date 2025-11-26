@@ -304,7 +304,6 @@ if not cuda_home:
             print("  because it imports CUDA modules during startup.\n")
             
             cuda_toolkit_missing = True  # Flag to force CPU mode
-            # Don't set invalid CUDA_HOME - let validation catch it and provide clear instructions
 
 # Import torch BEFORE xlstm to help refine CUDA_HOME if needed
 import gradio as gr
@@ -313,7 +312,6 @@ import torch.nn.functional as F
 import pretty_midi
 import mido
 
-# If CUDA toolkit is missing, we need to fail early with clear instructions
 # xlstm cannot import without a valid CUDA Toolkit installation
 if cuda_toolkit_missing and not os.environ.get("CUDA_HOME"):
     # Don't set an invalid CUDA_HOME - let the validation below catch it
@@ -322,8 +320,9 @@ if cuda_toolkit_missing and not os.environ.get("CUDA_HOME"):
 # -----------------------------
 # Verify CUDA availability
 # -----------------------------
-# cuda_toolkit_missing is set earlier if CUDA toolkit not found
+# Default to CUDA if available, fall back to CPU only if CUDA fails
 
+# Try CUDA first (default), fall back to CPU only if unavailable
 cuda_available = torch.cuda.is_available() and not cuda_toolkit_missing
 if cuda_available:
     try:
@@ -344,12 +343,13 @@ if cuda_available:
         device = "cpu"
         backend = "vanilla"
 else:
+    # Fall back to CPU mode only if CUDA is not available
     if cuda_toolkit_missing:
         print("ℹ CUDA Toolkit not installed, using CPU mode (CUDA driver is available but toolkit needed)")
     else:
         print("ℹ CUDA not available, using CPU mode")
     device = "cpu"
-    backend = "vanilla"
+    backend = "vanilla"  # CPU fallback
 
 print(f"Using device: {device}, backend: {backend}")
 
