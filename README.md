@@ -24,7 +24,7 @@ source venv/bin/activate
 
 2. **Install dependencies**:
 ```bash
-pip install torch torchvision torchaudio xlstm pretty_midi mido gradio note-seq jupyter
+pip install torch torchvision torchaudio xlstm pretty_midi mido gradio note-seq
 ```
 
 3. **Required files** (should already be present):
@@ -40,13 +40,16 @@ pip install torch torchvision torchaudio xlstm pretty_midi mido gradio note-seq 
    source venv/bin/activate
    ```
 
-2. **Open the notebook**:
+2. **Run the app**:
    ```bash
-   jupyter notebook 20251114.ipynb
+   python app.py
    ```
 
-3. **Use the interface**:
+3. **Access the interface**:
+   - The app will launch locally (typically at `http://127.0.0.1:7860`)
    - Select genre (Classical, Country, Hip-hop, Jazz, Rock)
    - Set DELTA, PITCH, VEL parameters
    - Optional: Enable style mixing and adjust alpha (0 = generated, 1 = style)
    - Click "Generate MIDI" and download the result
+
+**Note**: The app is configured for CPU mode by default. If you have CUDA installed and want to use GPU, change `backend="vanilla"` to `backend="cuda"` in `app.py`.
