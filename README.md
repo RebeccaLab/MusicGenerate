@@ -3,31 +3,19 @@
 Neural music generation using xLSTM to create MIDI sequences with style mixing.
 
 ## Setup
-
-1. **Set up Python environment with pyenv and venv**:
+- Use pyenv to install python 3.13.0
 ```bash
-# Initialize pyenv in current shell (if not already in PATH)
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
-# Install Python version (e.g., 3.11)
-pyenv install 3.11.0
-pyenv local 3.11.0
-
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-source venv/bin/activate
+pyenv install 3.13.0
+pyenv shell 3.13.0
+python -m venv env
+source env/bin/activate
+```
+- Install dependencies
+```bash
+pip install -r requirements.txt
 ```
 
-2. **Install dependencies**:
-```bash
-pip install torch torchvision torchaudio xlstm pretty_midi mido gradio note-seq
-```
-
-3. **Required files** (should already be present):
+**Required files** (should already be present):
    - `xlstm_best_model.pt`
    - `word_to_id.json`
    - `id_to_word.json`
@@ -37,7 +25,7 @@ pip install torch torchvision torchaudio xlstm pretty_midi mido gradio note-seq
 
 1. **Activate virtual environment** (if not already active):
    ```bash
-   source venv/bin/activate
+   source env/bin/activate
    ```
 
 2. **Run the app**:
